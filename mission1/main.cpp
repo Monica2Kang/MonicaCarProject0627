@@ -18,34 +18,37 @@ int main()
 
 int stack[10];
 
+void printStepGuide(int step);
+bool isNotNumber(char* checkNumber);
+bool IsExitAfterClearEnter(char* buf);
+bool isInvalidNumberByStep(int& step, int answer);
+bool isInvalidNumberForStepCarType(int step, int number);
+bool isInvalidNumberForStepEngine(int step, int number);
+bool isInvalidNumberForStepBrakeSystem(int step, int number);
+bool isInvalidNumberForStepSteeringSystem(int step, int number);
+bool isInvalidNumberForStepRunTest(int step, int number);
+
+int makeProducedCar(int step, int answer);
 void printSelectedCarType(int answer);
 void printSelectedEngine(int answer);
 void printSelectedBrakeSystem(int answer);
 void printSelectedSteeringSystem(int answer);
-bool isValidCheckForSystemBosch();
-bool isValidCheckForCarTruckWithBrakeSystem();
-bool isValidCheckForCarTruckWithEngine();
-bool isValidCheckForCarSUV();
-bool isValidCheckForCarSedan();
-void runProducedCar();
-void printCurrentStackSteeringSystem();
-void printCurrentStackBrakeSystem();
-void printCurrentStackEngine();
-void printCurrentStackCarType();
-void testProducedCar();
-void delay(int ms);
 
-void printStepGuide(int step);
-bool IsExitAfterClearEnter(char* buf);
-bool isNotNumber(char* checkNumber);
-bool isInvalidNumberByStep(int& step, int answer);
-bool isInvalidNumberForStepRunTest(int step, int number);
-bool isInvalidNumberForStepSteeringSystem(int step, int number);
-bool isInvalidNumberForStepBrakeSystem(int step, int number);
-bool isInvalidNumberForStepEngine(int step, int number);
-bool isInvalidNumberForStepCarType(int step, int number);
-int makeProducedCar(int step, int answer);
 void doRunTestProducedCar(int answer);
+void runProducedCar();
+int isValidCheck();
+bool isValidCheckForCarSedan();
+bool isValidCheckForCarSUV();
+bool isValidCheckForCarTruckWithEngine();
+bool isValidCheckForCarTruckWithBrakeSystem();
+bool isValidCheckForSystemBosch();
+void printCurrentStackCarType();
+void printCurrentStackEngine();
+void printCurrentStackBrakeSystem();
+void printCurrentStackSteeringSystem();
+void testProducedCar();
+
+void delay(int ms);
 
 enum QuestionType
 {
@@ -130,33 +133,6 @@ int main()
     }
 }
 
-bool IsExitAfterClearEnter(char* buf)
-{
-    // 엔터 개행문자 제거
-    char* context = nullptr;
-    strtok_s(buf, "\r", &context);
-    strtok_s(buf, "\n", &context);
-
-    if (!strcmp(buf, "exit"))
-    {
-        printf("바이바이\n");
-        return true;
-    }
-    return false;
-}
-
-bool isNotNumber(char* checkNumber)
-{
-    // 입력받은 문자가 숫자가 아니라면
-    if (*checkNumber != '\0')
-    {
-        printf("ERROR :: 숫자만 입력 가능\n");
-        delay(800);
-        return true;
-    }
-    return false;
-}
-
 void printStepGuide(int step)
 {
     if (step == CarType_Q)
@@ -213,29 +189,31 @@ void printStepGuide(int step)
     printf("===============================\n");
 }
 
-bool isInvalidNumberForStepCarType(int step, int number)
+bool IsExitAfterClearEnter(char* buf)
 {
-    return step == CarType_Q && !(number >= SEDAN && number <= TRUCK);
+    // 엔터 개행문자 제거
+    char* context = nullptr;
+    strtok_s(buf, "\r", &context);
+    strtok_s(buf, "\n", &context);
+
+    if (!strcmp(buf, "exit"))
+    {
+        printf("바이바이\n");
+        return true;
+    }
+    return false;
 }
 
-bool isInvalidNumberForStepEngine(int step, int number)
+bool isNotNumber(char* checkNumber)
 {
-    return step == Engine_Q && !(number >= BACK_NUMBER && number <= INVALID_E);
-}
-
-bool isInvalidNumberForStepBrakeSystem(int step, int number)
-{
-    return step == brakeSystem_Q && !(number >= BACK_NUMBER && number <= BOSCH_B);
-}
-
-bool isInvalidNumberForStepSteeringSystem(int step, int number)
-{
-    return step == SteeringSystem_Q && !(number >= BACK_NUMBER && number <= MOBIS);
-}
-
-bool isInvalidNumberForStepRunTest(int step, int number)
-{
-    return step == Run_Test && !(number >= BACK_NUMBER && number <= Test);
+    // 입력받은 문자가 숫자가 아니라면
+    if (*checkNumber != '\0')
+    {
+        printf("ERROR :: 숫자만 입력 가능\n");
+        delay(800);
+        return true;
+    }
+    return false;
 }
 
 bool isInvalidNumberByStep(int& step, int number)
@@ -291,6 +269,31 @@ bool isInvalidNumberByStep(int& step, int number)
     return false;
 }
 
+bool isInvalidNumberForStepCarType(int step, int number)
+{
+    return step == CarType_Q && !(number >= SEDAN && number <= TRUCK);
+}
+
+bool isInvalidNumberForStepEngine(int step, int number)
+{
+    return step == Engine_Q && !(number >= BACK_NUMBER && number <= INVALID_E);
+}
+
+bool isInvalidNumberForStepBrakeSystem(int step, int number)
+{
+    return step == brakeSystem_Q && !(number >= BACK_NUMBER && number <= BOSCH_B);
+}
+
+bool isInvalidNumberForStepSteeringSystem(int step, int number)
+{
+    return step == SteeringSystem_Q && !(number >= BACK_NUMBER && number <= MOBIS);
+}
+
+bool isInvalidNumberForStepRunTest(int step, int number)
+{
+    return step == Run_Test && !(number >= BACK_NUMBER && number <= Test);
+}
+
 int makeProducedCar(int step, int number)
 {
     if (step == CarType_Q)
@@ -317,25 +320,9 @@ int makeProducedCar(int step, int number)
         delay(800);
         return Run_Test;
     }
-   
+
     doRunTestProducedCar(number);
     return Run_Test;
-}
-
-void doRunTestProducedCar(int number)
-{
-    if (number == Run)
-    {
-        runProducedCar();
-        delay(2000);
-    }
-    else if (number == Test)
-    {
-        printf("Test...\n");
-        delay(1500);
-        testProducedCar();
-        delay(2000);
-    }
 }
 
 void printSelectedCarType(int carType)
@@ -380,6 +367,54 @@ void printSelectedSteeringSystem(int steeringSystem)
         printf("MOBIS 조향장치를 선택하셨습니다.\n");
 }
 
+void doRunTestProducedCar(int number)
+{
+    if (number == Run)
+    {
+        runProducedCar();
+        delay(2000);
+    }
+    else if (number == Test)
+    {
+        printf("Test...\n");
+        delay(1500);
+        testProducedCar();
+        delay(2000);
+    }
+}
+
+void runProducedCar()
+{
+    if (isValidCheck() == false)
+    {
+        printf("자동차가 동작되지 않습니다\n");
+        return;
+    }
+
+    if (stack[Engine_Q] == INVALID_E)
+    {
+        printf("엔진이 고장나있습니다.\n");
+        printf("자동차가 움직이지 않습니다.\n");
+        return;
+    }
+
+    printCurrentStackCarType();
+    printCurrentStackEngine();
+    printCurrentStackBrakeSystem();
+    printCurrentStackSteeringSystem();
+    printf("자동차가 동작됩니다.\n");
+}
+
+int isValidCheck()
+{
+    if (isValidCheckForCarSedan()) return false;
+    else if (isValidCheckForCarSUV()) return false;
+    else if (isValidCheckForCarTruckWithEngine()) return false;
+    else if (isValidCheckForCarTruckWithBrakeSystem()) return false;
+    else if (isValidCheckForSystemBosch()) return false;
+    return true;
+}
+
 bool isValidCheckForCarSedan()
 {
     return stack[CarType_Q] == SEDAN && stack[brakeSystem_Q] == CONTINENTAL;
@@ -403,38 +438,6 @@ bool isValidCheckForCarTruckWithBrakeSystem()
 bool isValidCheckForSystemBosch()
 {
     return stack[brakeSystem_Q] == BOSCH_B && stack[SteeringSystem_Q] != BOSCH_S;
-}
-
-int isValidCheck()
-{
-    if (isValidCheckForCarSedan()) return false;
-    else if (isValidCheckForCarSUV()) return false;
-    else if (isValidCheckForCarTruckWithEngine()) return false;
-    else if (isValidCheckForCarTruckWithBrakeSystem()) return false;
-    else if (isValidCheckForSystemBosch()) return false;
-    return true;
-}
-
-void runProducedCar()
-{
-    if (isValidCheck() == false)
-    {
-        printf("자동차가 동작되지 않습니다\n");
-        return;
-    }
-
-    if (stack[Engine_Q] == INVALID_E)
-    {
-        printf("엔진이 고장나있습니다.\n");
-        printf("자동차가 움직이지 않습니다.\n");
-        return;
-    }
-
-    printCurrentStackCarType();
-    printCurrentStackEngine();
-    printCurrentStackBrakeSystem();
-    printCurrentStackSteeringSystem();
-    printf("자동차가 동작됩니다.\n");
 }
 
 void printCurrentStackCarType()
